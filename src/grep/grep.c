@@ -42,10 +42,10 @@ void handle_file(const regex_t* regex, const char* filename, t_s21_option option
             line_num++;
         }
 
-        if (match_count > 0 && exists_option(options, OPTION_FILES_WITH_MATCH)) {
-            printf("%s\n", filename);
+        if (exists_option(options, OPTION_FILES_WITH_MATCH)) {
+            if (match_count > 0) printf("%s\n", filename);
         }
-        else if (match_count > 0 && exists_option(options, OPTION_COUNT)) {
+        else if (exists_option(options, OPTION_COUNT)) {
             if (!exists_option(options, OPTION_NO_FILENAME)) printf("%s:", filename);
             printf("%d\n", match_count);
         }
