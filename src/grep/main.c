@@ -4,24 +4,18 @@
 #include "grep.h"
 #include "option.h"
 
-static const char* short_opts = "e:ivclnh";
-static const struct option long_opts[] = {
-    {"regexp", 1, NULL, 'e'},
-    {"ignore-case", 0, NULL, 'i'},
-    {"invert-match", 0, NULL, 'v'},
-    {"count", 0, NULL, 'c'},
-    {"files-with-matches", 0, NULL, 'l'},
-    {"line-number", 0, NULL, 'n'},
-    {"no-filename", 0, NULL, 'h'},
-    {0, 0, 0, 0}
-};
+static const char* short_opts = "e:f:ivclnhso";
 
-t_s21_option parse_arguments(int argc, char** argv, char** pattern, bool* ok) {
+t_s21_option parse_arguments(int argc, char** argv, char** pattern, char** filename_pattern, bool* ok) {
     t_s21_option options = OPTION_NONE;
+    bool do_while = true;
+
     *pattern = NULL;
+    *filename_pattern = NULL;
     if (ok) *ok = true;
-    int ret;
-    while ((ret = getopt_long(argc, argv, short_opts, long_opts, NULL)) != -1) {
+
+    while (do_while) {
+        int ret = getopt_long(argc, argv, short_opts, NULL, NULL);
         switch (ret) {
             case 'e':
                 *pattern = optarg;
@@ -45,6 +39,15 @@ t_s21_option parse_arguments(int argc, char** argv, char** pattern, bool* ok) {
             case 'h':
                 options = add_option(options, OPTION_NO_FILENAME);
                 break;
+            case 's':                                                                                                                                                                                                                                            │
+                options = add_option(options, OPTION_NO_MESSAGES);                                                                                                                                                                                               │
+                break;                                                                                                                                                                                                                                           │
+            case 'f':                                                                                                                                                                                                                                            │
+                options = add_option(options, OPTION_FILE_PATTERN);                                                                                                                                                                                              │
+                break;                                                                                                                                                                                                                                           │
+            case 'o':                                                                                                                                                                                                                                            │
+                options = add_option(options, OPTION_ONLY_MATCHING);                                                                                                                                                                                             │
+                break;   
             case '?':
                 if (ok) *ok = false;
                 break;
