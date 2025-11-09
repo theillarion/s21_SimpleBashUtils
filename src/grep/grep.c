@@ -142,7 +142,7 @@ bool s21_grep(const t_parse_result* parse_result) {
   memset(regex, 0, sizeof(regex));
 
   for (size_t i = 0; ret && i < count_patterns; ++i) {
-    if (regcomp(&regex[i], parse_result->patterns[i], cflags) != REG_NOERROR) {
+    if (regcomp(&regex[i], parse_result->patterns[i], cflags) != 0) {
       S21_PRINT_ERROR("invalid pattern: %s", parse_result->patterns[i]);
       ret = false;
     }
