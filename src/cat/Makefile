@@ -28,6 +28,9 @@ rebuild				:	clean all
 test				:	all
 						@bash test/test_cat.sh
 
+valgrind			:	all
+						@bash test/test_cat.sh --valgrind
+
 format				:
 						@cp ../../materials/linters/.clang-format .
 						@clang-format -i $(SRCS) $(HEADERS)
@@ -36,4 +39,4 @@ format				:
 check 				:	$(SRCS)
 						@cppcheck --enable=all $(INCLUDES) $(SRCS) --suppress=missingIncludeSystem --suppress=checkersReport --check-level=exhaustive
 
-.PHONY				:	all clean rebuild test format check
+.PHONY				:	all clean rebuild test valgrind format check

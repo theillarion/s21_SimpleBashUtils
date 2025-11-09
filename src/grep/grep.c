@@ -62,8 +62,6 @@ static size_t find_part_mathes(const regex_t* regexes, size_t count_regex,
     bool matched = (min_pos < pos + len_line);
     if (exists_option(options, OPTION_INVERT)) matched = !matched;
     if (matched) {
-      // printf("Line: %d; Pos: %zu; Size: %zu\nLine: '%s' (%zu)", line_num,
-      // min_pos - line, len_min_pos, line, len_line);
       char* match_str = (char*)malloc(len_min_pos + 1);
       if (match_str) {
         strlcpy(match_str, min_pos, len_min_pos + 1);

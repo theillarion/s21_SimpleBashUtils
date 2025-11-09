@@ -3,6 +3,12 @@
 S21_GREP=../grep/s21_grep
 GREP=grep
 TESTDIR=test
+USE_VALGRIND=false
+
+if [[ "$1" == "--valgrind" ]]; then
+  USE_VALGRIND=true
+  echo "=== Valgrind mode enabled ==="
+fi
 
 flags=(
     # Одиночные флаги
@@ -142,4 +148,46 @@ if [ $fail -eq 0 ]; then
   echo -e "\033[0;32mSUCCESS: $total tests passed!\033[0m"
 else
   echo -e "\033[0;31mFAILED: $fail/$total tests failed\033[0m"
+fi
+
+###################################
+#     VALGRIND TESTS (optional)
+###################################
+if $USE_VALGRIND; then
+  echo -e "\n\n=== VALGRIND TESTS ==="
+
+  val_fail=0
+  val_total=0
+  val_test_num=1
+
+  for flag in "${flags[@]}"; do
+    for file in "${files[@]}"; do
+      val_total=$((val_total+1))
+      echo "[${val_test_num}/${#flags[@]}x${#files[@]}] Memory testing: flag=[$flag] file=[$file]"
+      valgrind_output="$TESTDIR/valgrind_out.txt"
+      
+      valgrind -s --leak-check=full --show-leak-kinds=all --track-origins=yes $S21_GREP $flag $file > /dev/null 2> "$valgrind_output"
+
+      leaks_ok=$(grep -c "All heap blocks were freed -- no leaks are possible" "$valgrind_output")
+      errors_ok=$(grep -c "ERROR SUMMARY: 0 errors from 0 contexts" "$valgrind_output")
+
+      if [ $leaks_ok -eq 1 ] && [ $errors_ok -eq 1 ]; then
+        echo -e "\033[0;32mVALGRIND PASS\033[0m\n"
+      else
+        echo -e "\033[0;31mVALGRIND FAILED\033[0m"
+        grep -E "HEAP SUMMARY|in use at exit|total heap usage|ERROR SUMMARY" "$valgrind_output"
+        echo -e ""
+        val_fail=$((val_fail+1))
+      fi
+
+      rm "$valgrind_output"
+      val_test_num=$((val_test_num+1))
+    done
+  done
+
+  if [ $val_fail -eq 0 ]; then
+    echo -e "\n\033[0;32mVALGRIND SUCCESS: $val_total tests passed!\033[0m"
+  else
+    echo -e "\n\033[0;31mVALGRIND FAILED: $val_fail/$val_total tests failed\033[0m"
+  fi
 fi
