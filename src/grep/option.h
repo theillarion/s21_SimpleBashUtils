@@ -12,6 +12,9 @@ typedef enum s21_option {
     OPTION_FILES_WITH_MATCH = 1 << 4,   // -l: Только имена файлов с совпадениями
     OPTION_LINE_NUMBER      = 1 << 5,   // -n: Печатать номер строки
     OPTION_NO_FILENAME      = 1 << 6,   // -h: Не печатать имя файла
+    OPTION_NO_MESSAGES      = 1 << 7,   // -s: Подавлять сообщения об ошибках
+    OPTION_FILE_PATTERN     = 1 << 8,   // -f: Шаблоны из файла
+    OPTION_ONLY_MATCHING    = 1 << 9,   // -o: Только совпадающие части
 } t_s21_option;
 
 t_s21_option add_option(t_s21_option options, t_s21_option option);

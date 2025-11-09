@@ -1,7 +1,7 @@
 NAME = s21_grep
 CC = gcc
 CFLAGS = -Wall -Werror -Wextra -std=c11
-SRCS = main.c grep.c option.c
+SRCS = grep.c main.c option.c parser.c strings.c
 OBJS = $(SRCS:.c=.o)
 INCLUDES = -I .
 RM = rm -rf
