@@ -2,7 +2,6 @@
 
 #include "strings.h"
 
-#include <stdio.h> // FIXME: remove
 #include <stdlib.h>
 #include <string.h>
 
@@ -20,7 +19,6 @@ bool append_string(char*** dest_strings, const char* src_string)
     bool ret = true;
     if (!*dest_strings)
     {
-        printf("Allocating new strings array: '%s'\n", src_string); // FIXME: remove
         *dest_strings = (char**)malloc(2 * sizeof(**dest_strings));
         if (*dest_strings)
         {
@@ -31,7 +29,6 @@ bool append_string(char*** dest_strings, const char* src_string)
             ret = false;
         }
     } else {
-        printf("added elem to array: '%s'\n", src_string); // FIXME: remove
         size_t count = count_strings(*dest_strings);
         char** new_array = (char**)realloc(*dest_strings, (count + 2) * sizeof(char*));
         if (new_array)

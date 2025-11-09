@@ -11,7 +11,7 @@
 
 t_parse_result s21_init_parse_result()
 {
-    t_parse_result result = {.ok = false, .options = OPTION_NONE, .patterns = NULL, .filenames = NULL};
+    t_parse_result result = {.ok = true, .options = OPTION_NONE, .patterns = NULL, .filenames = NULL};
     return result;
 }
 
@@ -97,10 +97,6 @@ t_parse_result s21_parse_arguments(int argc, char** argv) {
     else {
         result.ok = false;
     }
-
-    // for (const char* pattern = *result.patterns; pattern; pattern = *(++result.patterns)) {
-    //     printf("Pattern: %s\n", pattern);
-    // }
 
     return result;
 }
