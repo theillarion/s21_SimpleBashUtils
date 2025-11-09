@@ -34,6 +34,6 @@ format				:
 						@rm .clang-format
 
 check 				:	$(SRCS)
-						@cppcheck --enable=all $(SRCS) $(INCLUDES) --suppress=missingIncludeSystem --check-level=exhaustive
+						@cppcheck --enable=all $(INCLUDES) $(SRCS) --suppress=missingIncludeSystem --suppress=checkersReport --check-level=exhaustive
 
 .PHONY				:	all clean rebuild test format check
