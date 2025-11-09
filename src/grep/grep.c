@@ -11,6 +11,10 @@
 #include "strings.h"
 #include "utility.h"
 
+static bool is_empty_line(const char* line) {
+    return strlen(line) == 0;
+}
+
 static bool exists_newline(const char* line) {
   size_t len = strlen(line);
   return (len > 0 && line[len - 1] == '\n');
@@ -19,7 +23,7 @@ static bool exists_newline(const char* line) {
 static void print_match(t_s21_option options, const char* filename,
                         const char* line, int line_num) {
   if (exists_option(options, OPTION_COUNT) ||
-      exists_option(options, OPTION_FILES_WITH_MATCH)) {
+      exists_option(options, OPTION_FILES_WITH_MATCH) || is_empty_line(line)) {
     return;
   }
 
@@ -41,8 +45,9 @@ static size_t find_part_mathes(const regex_t* regexes, size_t count_regex,
                                t_s21_option options, const char* filename,
                                const char* line, int line_num) {
   size_t match_count = 0;
+  const size_t len_line = strlen(line);
   const char* pos = line;
-  while (pos) {
+  while (pos && pos < (line + len_line)) {
     const char* min_pos = pos + strlen(line);
     size_t len_min_pos = 0;
     for (size_t i = 0; i < count_regex; ++i) {
@@ -56,9 +61,11 @@ static size_t find_part_mathes(const regex_t* regexes, size_t count_regex,
       }
     }
 
-    bool matched = (min_pos < pos + strlen(line));
+    
+    bool matched = (min_pos < pos + len_line);
     if (exists_option(options, OPTION_INVERT)) matched = !matched;
     if (matched) {
+        //printf("Line: %d; Pos: %zu; Size: %zu\nLine: '%s' (%zu)", line_num, min_pos - line, len_min_pos, line, len_line);
       char* match_str = (char*)malloc(len_min_pos + 1);
       if (match_str) {
         strlcpy(match_str, min_pos, len_min_pos + 1);

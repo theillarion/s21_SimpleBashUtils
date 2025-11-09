@@ -6,6 +6,7 @@ TESTDIR=test
 
 flags=(
     # Одиночные флаги
+    "Hello"
     "-e Hello"
     "-e World"
     "-i -e hello"
@@ -63,12 +64,21 @@ flags=(
     "-f $TESTDIR/patterns.txt -f $TESTDIR/patterns2.txt -s"
     "-f $TESTDIR/patterns.txt -f $TESTDIR/patterns2.txt -o"
     # Краевые случаи
+    "''"
+    "' '"
+    "'     '"
     "-e ''"
+    "-e ' '"
+    "-e '     '"
     "-e Hello -e ''"
+    "-ov -e ''"
+    "-ov -e ' '"
+    "-ov -e o"
+    "-ov -e Hello"
     "-e Hello -e World -f $TESTDIR/patterns.txt -f $TESTDIR/patterns2.txt -i -v -c -n -h -s -o"
     "-lche -f $TESTDIR/pattern_space.txt"
     "-isnhco -e Hello $TESTDIR/file3.txt"
-    # Пары и тройки
+    # Пары
     "-iv -e Hello"
     "-in -e Hello"
     "-cv -e Hello"
@@ -79,6 +89,18 @@ flags=(
     "-hn -e Hello"
     "-sn -e Hello"
     "-on -e Hello"
+    # Тройки
+    "-ivn -e Hello"
+    "-cln -e Hello"
+    "-lnh -e Hello"
+    # Четверки
+    "-ivcl -e Hello"
+    "-snhv -e Hello"
+    # Пятерки
+    "-ivcln -e Hello"
+    "-snhvo -e Hello"
+    # Шестерки
+    "-ivclnh -e Hello"
     # Несколько файлов
     "-e Hello $TESTDIR/file1.txt $TESTDIR/file2.txt"
 )
@@ -94,23 +116,22 @@ files=(
 
 fail=0
 total=0
-
 test_num=1
 
-# Обычные тесты
 for flag in "${flags[@]}"; do
   for file in "${files[@]}"; do
     total=$((total+1))
     echo "[${test_num}/${#flags[@]}x${#files[@]}] Testing: flag=[$flag] file=[$file]"
-    $S21_GREP $flag "$file" > "$TESTDIR/s21_grep_out.txt" 2> "$TESTDIR/s21_grep_err.txt"
-    $GREP $flag "$file" > "$TESTDIR/grep_out.txt" 2> "$TESTDIR/grep_err.txt"
+    eval "$S21_GREP $flag $file" > "$TESTDIR/s21_grep_out.txt" 2> "$TESTDIR/s21_grep_err.txt"
+    eval "$GREP $flag $file" > "$TESTDIR/grep_out.txt" 2> "$TESTDIR/grep_err.txt"
     diff -q "$TESTDIR/s21_grep_out.txt" "$TESTDIR/grep_out.txt" > /dev/null && diff -q "$TESTDIR/s21_grep_err.txt" "$TESTDIR/grep_err.txt" > /dev/null
     if [ $? -ne 0 ]; then
       echo -e "\033[0;31mFAILED\033[0m"
-      echo -e "\033[0;31mFAIL: flag=[$flag] file=[$file]\033[0m"
+      echo -e "Diff (standart output): $(diff -u "$TESTDIR/s21_grep_out.txt" "$TESTDIR/grep_out.txt")\n"
+      echo -e "Diff (error output): $(diff -u "$TESTDIR/s21_grep_err.txt" "$TESTDIR/grep_err.txt")\n"
       fail=$((fail+1))
     else
-      echo -e "\033[0;32mPASS\033[0m"
+      echo -e "\033[0;32mPASS\033[0m\n"
     fi
     rm "$TESTDIR/s21_grep_out.txt" "$TESTDIR/grep_out.txt" "$TESTDIR/s21_grep_err.txt" "$TESTDIR/grep_err.txt"
     test_num=$((test_num+1))
