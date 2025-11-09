@@ -1,26 +1,39 @@
-NAME = s21_grep
-CC = gcc
-CFLAGS = -Wall -Werror -Wextra -std=c11
-SRCS = grep.c main.c option.c parser.c strings.c
-OBJS = $(SRCS:.c=.o)
-INCLUDES = -I .
-RM = rm -rf
+BUILD_DIR	=	.
+NAME		=	$(BUILD_DIR)/s21_grep
 
-all: $(NAME)
+CC			=	gcc
+CFLAGS		=	-Wall -Werror -Wextra -std=c11
 
-$(NAME): $(OBJS)
-	$(CC) $(INCLUDES) $(CFLAGS) $^ -o $@
+SRCS 		= 	grep.c main.c option.c parser.c strings.c
+HEADERS		= 	grep.h option.h parser.h strings.h
+OBJS		=	$(SRCS:%.c=$(BUILD_DIR)/%.o)
 
-%.o: %.c
-	$(CC) $(INCLUDES) $(CFLAGS) -c $< -o $@
+INCLUDES	=	-I .
+RM			=	rm -rf
 
-clean:
-	$(RM) $(OBJS) $(NAME)
+all					:	$(NAME)
 
-rebuild: clean all
+$(BUILD_DIR)/%.o	:	%.c $(HEADERS)
+						$(CC) $(INCLUDES) $(CFLAGS) -c $< -o $@
 
-run: $(NAME)
-	@./$(NAME)
+$(NAME)				:	$(OBJS)
+						$(CC) $^ -o $@
 
-test: rebuild
-	@bash test/test_grep.sh
+clean				:	
+						$(RM) $(OBJS) $(OBJS_D)
+						$(RM) $(NAME)
+
+rebuild				:	clean all
+
+test				:	all
+						@bash test/test_grep.sh
+
+format				:
+						@cp ../../materials/linters/.clang-format .
+						@clang-format -i $(SRCS) $(HEADERS)
+						@rm .clang-format
+
+check 				:	$(SRCS)
+						@cppcheck --enable=all $(SRCS) $(INCLUDES) --suppress=missingIncludeSystem --check-level=exhaustive
+
+.PHONY				:	all clean rebuild test format check

@@ -2,15 +2,12 @@
 
 #define _GNU_SOURCE
 #include <errno.h>
-#include <getopt.h>
 #include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-static const char* short_opt_str = "bnsvETet";
-static const struct option long_opt_str[] = {{"number-nonblank", 0, NULL, 'b'},
-                                             {"number", 0, NULL, 'n'},
-                                             {"squeeze-blank", 0, NULL, 's'}};
+#include "utility.h"
 
 static void print_char(unsigned char symbol, t_s21_option options) {
   if (symbol == '\n' && exists_option(options, OPTION_SHOW_ENDS)) {
@@ -52,7 +49,8 @@ static bool need_number(size_t prev_symbol, size_t curr_symbol,
            exists_option(options, OPTION_NUMBER_ALL)));
 }
 
-static void handle_file(t_s21_option options, const char* filename) {
+static bool handle_file(t_s21_option options, const char* filename) {
+  int ret = true;
   FILE* file = fopen(filename, "rb");
   if (file) {
     int curr_symbol, prev_symbol = '\n';
@@ -78,52 +76,20 @@ static void handle_file(t_s21_option options, const char* filename) {
   } else {
     S21_PRINT_ERROR("%s", strerror(errno));
     errno = 0;
+    ret = false;
   }
+  return ret;
 }
 
-t_s21_option s21_parse_arguments(int argc, char** argv, bool* ok) {
-  t_s21_option options = OPTION_NONE;
-  bool do_while = true;
-
-  if (ok) *ok = true;
-  while (do_while) {
-    int ret = getopt_long(argc, argv, short_opt_str, long_opt_str, NULL);
-    if (ret == 'b')
-      options = add_option(options, OPTION_NUMBER_NONBLANK);
-    else if (ret == 'n')
-      options = add_option(options, OPTION_NUMBER_ALL);
-    else if (ret == 's')
-      options = add_option(options, OPTION_SQUEEZE_BLANKS);
-    else if (ret == 'v')
-      options = add_option(options, OPTION_SHOW_NONPRINTING);
-    else if (ret == 'E')
-      options = add_option(options, OPTION_SHOW_ENDS);
-    else if (ret == 'T')
-      options = add_option(options, OPTION_SHOW_TABS);
-    else if (ret == 'e')
-      options = add_option(options, OPTION_SHOW_NONPRINTING | OPTION_SHOW_ENDS);
-    else if (ret == 't')
-      options = add_option(options, OPTION_SHOW_NONPRINTING | OPTION_SHOW_TABS);
-    else if (ret == '?') {
-      if (ok) *ok = false;
-      do_while = false;
-    } else if (ret == -1) {
-      do_while = false;
-    } else {
-      if (ok) *ok = false;
-      do_while = false;
-    }
-  }
-  return options;
-}
-
-void s21_cat(t_s21_option options, char** filenames) {
+bool s21_cat(t_s21_option options, char** filenames) {
   if (!filenames) {
-    return;
+    return false;
   }
 
-  while (*filenames) {
-    handle_file(options, *filenames);
+  bool ret = true;
+  while (*filenames && ret) {
+    ret = handle_file(options, *filenames);
     ++filenames;
   }
+  return ret;
 }

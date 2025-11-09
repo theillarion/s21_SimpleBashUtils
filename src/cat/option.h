@@ -15,7 +15,6 @@ typedef enum s21_option {
 } t_s21_option;
 
 t_s21_option add_option(t_s21_option options, t_s21_option option);
-t_s21_option remove_option(t_s21_option options, t_s21_option option);
 bool exists_option(t_s21_option options, t_s21_option option);
 
 #endif  // S21_OPTIONS_H
