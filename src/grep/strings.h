@@ -6,6 +6,6 @@
 
 size_t count_strings(char* const* strings);
 bool append_string(char*** dest_strings, const char* src_string);
-void destroy_strings(char*** dest_strings);
+void destroy_strings(char*** strings);
 
 #endif  // S21_STRINGS_H
