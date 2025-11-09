@@ -1,0 +1,6 @@
+pattern1
+pattern2
+pattern3
+PATTERN1
+PaTtErN2
+

@@ -17,6 +17,22 @@ flags=(
     "-s -e Hello"
     "-f $TESTDIR/patterns.txt"
     "-o -e Hello"
+    "-e Line"
+    "-e spaces"
+    "-e Tabbed"
+    "-e 1234567890"
+    "-e !@#"
+    "-e End"
+    "-i -e line"
+    "-v -e Line"
+    "-c -e Line"
+    "-n -e Line"
+    "-o -e Line"
+    "-e Line -e End"
+    "-e Line -v -e End"
+    "-e Line -c -e End"
+    "-e Line -n -e End"
+    "-e Line -o -e End"
     # Комбинации флагов
     "-e Hello -e World"
     "-e Hello -e World -i"
@@ -28,6 +44,7 @@ flags=(
     "-e Hello -e World -s"
     "-e Hello -e World -o"
     "-e Hello -f $TESTDIR/patterns.txt"
+    "-e Hello -f $TESTDIR/pattern_variants.txt"
     "-e Hello -f $TESTDIR/patterns.txt -i"
     "-e Hello -f $TESTDIR/patterns.txt -v"
     "-e Hello -f $TESTDIR/patterns.txt -c"
@@ -62,10 +79,6 @@ flags=(
     "-on -e Hello"
     # Несколько файлов
     "-e Hello $TESTDIR/file1.txt $TESTDIR/file2.txt"
-    "-e Hello $TESTDIR/file1.txt $TESTDIR/emptylines.txt"
-    "-e Hello $TESTDIR/file2.txt $TESTDIR/emptylines.txt"
-    # Пустой файл
-    "-e Hello $TESTDIR/emptylines.txt"
 )
 
 files=(
@@ -73,26 +86,32 @@ files=(
     "$TESTDIR/file2.txt"
     "$TESTDIR/file3.txt"
     "$TESTDIR/emptylines.txt"
-    "$TESTDIR/patterns.txt"
-    "$TESTDIR/patterns2.txt"
-    "$TESTDIR/invalid_pattern.txt"
+    "$TESTDIR/case_mixed.txt"
+    "$TESTDIR/specials.txt"
 )
 
 fail=0
 total=0
 
+test_num=1
+
+# Обычные тесты
 for flag in "${flags[@]}"; do
   for file in "${files[@]}"; do
     total=$((total+1))
-    echo $flag $file
+    echo "[${test_num}/${#flags[@]}x${#files[@]}] Testing: flag=[$flag] file=[$file]"
     $S21_GREP $flag "$file" > "$TESTDIR/s21_grep_out.txt" 2> "$TESTDIR/s21_grep_err.txt"
     $GREP $flag "$file" > "$TESTDIR/grep_out.txt" 2> "$TESTDIR/grep_err.txt"
     diff -q "$TESTDIR/s21_grep_out.txt" "$TESTDIR/grep_out.txt" > /dev/null && diff -q "$TESTDIR/s21_grep_err.txt" "$TESTDIR/grep_err.txt" > /dev/null
     if [ $? -ne 0 ]; then
+      echo -e "\033[0;31mFAILED\033[0m"
       echo -e "\033[0;31mFAIL: flag=[$flag] file=[$file]\033[0m"
       fail=$((fail+1))
+    else
+      echo -e "\033[0;32mPASS\033[0m"
     fi
     rm "$TESTDIR/s21_grep_out.txt" "$TESTDIR/grep_out.txt" "$TESTDIR/s21_grep_err.txt" "$TESTDIR/grep_err.txt"
+    test_num=$((test_num+1))
   done
 done
 

@@ -1,0 +1,11 @@
+# This file contains lines with special characters, numbers, and whitespace
+
+Line with spaces    
+	Tabbed line
+Line_with_underscores
+Line-with-dashes
+Line.with.dots
+1234567890
+!@#$%^&*()_+-=[]{}|;:',.<>/?
+
+End of file
