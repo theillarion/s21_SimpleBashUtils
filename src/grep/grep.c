@@ -55,7 +55,7 @@ static size_t find_part_mathes(const regex_t* regexes, size_t count_regex, t_s21
                 min_pos = (curr_pos < min_pos) ? curr_pos : min_pos;   
             }
         }
-        
+
         bool matched = (min_pos < pos + strlen(line));
         if (exists_option(options, OPTION_INVERT)) matched = !matched;
         if (matched)

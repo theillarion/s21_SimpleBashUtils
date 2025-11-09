@@ -66,6 +66,8 @@ flags=(
     "-e ''"
     "-e Hello -e ''"
     "-e Hello -e World -f $TESTDIR/patterns.txt -f $TESTDIR/patterns2.txt -i -v -c -n -h -s -o"
+    "-lche -f $TESTDIR/pattern_space.txt"
+    "-isnhco -e Hello $TESTDIR/file3.txt"
     # Пары и тройки
     "-iv -e Hello"
     "-in -e Hello"
