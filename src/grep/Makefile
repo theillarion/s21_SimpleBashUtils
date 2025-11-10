@@ -5,7 +5,7 @@ CC			=	gcc
 CFLAGS		=	-Wall -Werror -Wextra -std=c11
 
 SRCS 		= 	grep.c main.c option.c parser.c strings.c
-HEADERS		= 	grep.h option.h parser.h strings.h
+HEADERS		= 	grep.h option.h parser.h strings.h utility.h
 OBJS		=	$(SRCS:%.c=$(BUILD_DIR)/%.o)
 
 INCLUDES	=	-I .
